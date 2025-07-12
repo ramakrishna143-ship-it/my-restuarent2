@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Owner Dashboard - Ram Restaurant</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <script defer>
+    document.addEventListener("DOMContentLoaded", () => {
+      document.getElementById("addItemForm").addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const item = {
+          name: e.target.name.value,
+          price: parseFloat(e.target.price.value),
+          image: e.target.image.value,
+          category: e.target.category.value
+        };
+
+        const res = await fetch("/add-item", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(item)
+        });
+
+        if (res.ok) {
+          alert("Item added!");
+          location.reload();
+        }
+      });
+
+      document.querySelectorAll(".removeBtn").forEach(btn => {
+        btn.addEventListener("click", async () => {
+          const name = btn.dataset.name;
+          const category = btn.dataset.category;
+
+          const res = await fetch("/remove-item", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name, category })
+          });
+
+          if (res.ok) {
+            alert("Item removed!");
+            location.reload();
+          }
+        });
+      });
+    });
+  </script>
+</head>
+<body>
+  <body>
+  <div class="owner-container">
+    <a href="/" class="customer-btn">← Customer Page</a>
+    <h2>👨‍🍳 Owner Dashboard</h2>
+    <!-- rest of your content -->
+
+  <div class="owner-container">
+    <h2>👨‍🍳 Owner Dashboard</h2>
+
+    <form id="addItemForm" class="add-item-form">
+      <input type="text" name="name" placeholder="Item Name" required>
+      <input type="number" name="price" placeholder="Price" required>
+      <input type="text" name="image" placeholder="Image URL" required>
+      <select name="category" required>
+        <option value="">Select Category</option>
+        <option value="Veg">Veg</option>
+        <option value="Non-Veg">Non-Veg</option>
+        <option value="Drinks">Drinks</option>
+      </select>
+      <button type="submit">Add Item</button>
+    </form>
+
+    <h3>📋 Current Menu</h3>
+    {% for category, items in menu.items() %}
+      <h4>{{ category }}</h4>
+      <ul>
+        {% for item in items %}
+          <li>
+            <img src="{{ item.image }}" width="40"> 
+            {{ item.name }} - ₹{{ item.price }}
+            <button class="removeBtn" data-name="{{ item.name }}" data-category="{{ category }}">❌ Remove</button>
+          </li>
+        {% endfor %}
+      </ul>
+    {% endfor %}
+  </div>
+</body>
+</html>

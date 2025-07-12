@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Ram Restaurant</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <script defer src="{{ url_for('static', filename='js/script.js') }}"></script>
+  <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
+<meta name="theme-color" content="#FF6600" />
+<link rel="apple-touch-icon" href="{{ url_for('static', filename='images/icon-192.png') }}">
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+</head>
+<body>
+ <header>
+  <h1>🍽️ Ram Restaurant</h1>
+  <a href="/login" class="owner-login-btn">Owner Login</a>
+
+  <div class="top-controls">
+      <select id="categoryFilter">
+        <option value="All">All Categories</option>
+        <option value="Veg">Veg</option>
+        <option value="Non-Veg">Non-Veg</option>
+        <option value="Drinks">Drinks</option>
+      </select>
+      <div class="search-box">
+        <input type="text" id="searchInput" placeholder="Search food...">
+        <button id="voiceSearch">🎤</button>
+      </div>
+    </div>
+  </header>
+
+  <main id="menuContainer">
+    {% for category, items in menu.items() %}
+      <h2 class="category-heading">{{ category }}</h2>
+      <div class="menu-section" data-category="{{ category }}">
+        {% for item in items %}
+          <div class="menu-card" data-name="{{ item.name }}">
+            <img src="{{ item.image }}" alt="{{ item.name }}">
+            <h3>{{ item.name }}</h3>
+            <p>₹{{ item.price }}</p>
+            <div class="qty-controls">
+              <input type="number" min="1" value="1" class="qty-input">
+              <button class="add-btn">Add</button>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% endfor %}
+  </main>
+
+  <footer class="cart-footer">
+    <div id="cartDetails"></div>
+    <button id="confirmBtn">Confirm Order</button>
+  </footer>
+
+  <div id="tableInfo" style="display: none;">{{ table }}</div>
+  <script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/static/sw.js').then(reg => {
+        console.log('Service Worker registered.', reg);
+      });
+    });
+  }
+</script>
+
+</body>
+</html>
